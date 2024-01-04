@@ -13,5 +13,4 @@ public class EazyBankBackendApplication {
 		SpringApplication.run(EazyBankBackendApplication.class, args);
 	}
 
-	Logger logger = LoggerFactory.getLogger(EazyBankBackendApplication.class);
 }

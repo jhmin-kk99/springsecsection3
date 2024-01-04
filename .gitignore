@@ -33,4 +33,4 @@ build/
 .vscode/
 
 ### application.properties ###
-*/application-aws.properties
+*ex*/application-aws.properties

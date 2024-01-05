@@ -8,10 +8,15 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+
+import javax.sql.DataSource;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -20,10 +25,10 @@ public class ProjectSecurityConfig {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
+        http.csrf().disable()
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/myAccount", "/myBalance", "myLoans", "/myCards").authenticated()
-                        .requestMatchers("/notices", "/contact").permitAll()
+                        .requestMatchers("/notices", "/contact", "/register").permitAll()
                 )
                 .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults());
@@ -32,41 +37,45 @@ public class ProjectSecurityConfig {
     // from SpringBootWebSecurityConfiguration
     // very important whenever we define out own custom requirements
 
-
-    @Bean
-    public InMemoryUserDetailsManager userDetailsManager(){
-//        UserDetails admin = User.withDefaultPasswordEncoder()
-//                .username("admin")
+//
+//    @Bean
+//    public InMemoryUserDetailsManager userDetailsManager(){
+////        UserDetails admin = User.withDefaultPasswordEncoder()
+////                .username("admin")
+////                .password("12345")
+////                .authorities("admin")
+////                .build();
+////
+////        UserDetails user = User.withDefaultPasswordEncoder()
+////                .username("user")
+////                .password("12345")
+////                .authorities("read")
+////                .build();
+////        return new InMemoryUserDetailsManager(admin, user);
+//
+//       // Approach 2
+//        UserDetails admin = User.withUsername("admin")
 //                .password("12345")
 //                .authorities("admin")
 //                .build();
-//
-//        UserDetails user = User.withDefaultPasswordEncoder()
-//                .username("user")
+//        UserDetails user = User.withUsername("user")
 //                .password("12345")
 //                .authorities("read")
 //                .build();
 //        return new InMemoryUserDetailsManager(admin, user);
+//    }
 
-       // Approach 2
-        UserDetails admin = User.withUsername("admin")
-                .password("12345")
-                .authorities("admin")
-                .build();
-        UserDetails user = User.withUsername("user")
-                .password("12345")
-                .authorities("read")
-                .build();
-        return new InMemoryUserDetailsManager(admin, user);
-    }
+//    @Bean
+//    public UserDetailsService userDetailsService(DataSource dataSource){
+//        return new JdbcUserDetailsManager(dataSource);
+//    }
 
     //use only for non-prod
     @Bean
-    public PasswordEncoder passwordEncoder(){
-        return NoOpPasswordEncoder.getInstance();
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+
     }
-
-
 }
 
 
